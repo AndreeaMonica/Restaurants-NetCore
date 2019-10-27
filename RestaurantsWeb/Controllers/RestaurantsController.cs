@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RestaurantsWeb.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,23 @@ namespace RestaurantsWeb.Controllers
     [ApiController]
     public class RestaurantsController : ControllerBase
     {
-        // GET api/values
-        [HttpGet]
-        public IActionResult Get()
+        private readonly IRestaurantRepository restaurantRepository;
+
+        public RestaurantsController(IRestaurantRepository restaurantRepository)
         {
-            return Ok("Default Restaurants"); 
+            this.restaurantRepository = restaurantRepository;
+        }
+
+        // GET api/values
+        [HttpGet("{name}")]
+        public IActionResult Get([FromRoute] string name)
+        {
+            var restaurant = restaurantRepository.GetRestaurant(name);
+            if (restaurant == null)
+            {
+                return NoContent();
+            }
+            return Ok(restaurant); 
         }
     }
 }
