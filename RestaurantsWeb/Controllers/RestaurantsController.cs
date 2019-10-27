@@ -14,7 +14,7 @@ namespace RestaurantsWeb.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok("Default Restaurants");
+            return Ok("Default Restaurants"); 
         }
     }
 }
