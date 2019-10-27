@@ -23,6 +23,10 @@ namespace RestaurantsWeb.Controllers
         public IActionResult Get([FromRoute] string name)
         {
             var restaurant = restaurantRepository.GetRestaurant(name);
+            if (restaurant == null)
+            {
+                return NoContent();
+            }
             return Ok(restaurant); 
         }
     }

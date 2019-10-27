@@ -23,10 +23,6 @@ namespace RestaurantsWeb.Repositories
         public RestaurantDTO GetRestaurant(string name)
         {
             var restaurant = context.FirstOrDefault(x => x.Name == name);
-            if (restaurant == null)
-            {
-                throw new Exception("Invalid name");
-            }
             return restaurant;
         }
     }
