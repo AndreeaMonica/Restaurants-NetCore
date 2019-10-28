@@ -6,6 +6,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantsWeb.Entities;
 using RestaurantsWeb.Models;
+using RestaurantsWeb.Repositories;
 
 namespace RestaurantsWeb.Controllers
 {
@@ -13,58 +14,57 @@ namespace RestaurantsWeb.Controllers
     [ApiController]
     public class RestaurantsController : ControllerBase
     {
-        private readonly IRestaurantRepository repository;
-        private readonly IValidator<AddRestaurantRequest> validator;
-        private readonly IValidator<UpdateRestaurantRequest> updateValidator;
+        private readonly IRestaurantRepository restaurantRepository;
+        private readonly IValidator<AddRestaurantRequest> addRestaurantRequestValidator;
+        private readonly IValidator<UpdateRestaurantRequest> addUpdateRequestValidator;
 
-        public RestaurantsController(IRestaurantRepository repository, 
-            IValidator<AddRestaurantRequest> validator,
-            IValidator<UpdateRestaurantRequest> updateValidator
-
+        public RestaurantsController(IRestaurantRepository restaurantRepository, 
+            IValidator<AddRestaurantRequest> addRestaurantRequestValidator,
+            IValidator<UpdateRestaurantRequest> addUpdateRequestValidator
             )
         {
-            this.repository = repository;
-            this.validator = validator;
-            this.updateValidator = updateValidator;
+            this.restaurantRepository = restaurantRepository;
+            this.addRestaurantRequestValidator = addRestaurantRequestValidator;
+            this.addUpdateRequestValidator = addUpdateRequestValidator;
         }
 
         public IActionResult GetAllRestaurants()
         {
-            var restaurants = repository.GetAllRestaurants();
+            var restaurants = restaurantRepository.GetAllRestaurants();
             return Ok(restaurants);
         }
 
         [HttpPost]
         public IActionResult AddRestaurant([FromBody] AddRestaurantRequest restaurant)
         {
-            validator.ValidateAndThrow(restaurant);
-            var addRestaurant = repository.AddRestaurant(restaurant);
+            addRestaurantRequestValidator.ValidateAndThrow(restaurant);
+            var addRestaurant = restaurantRepository.AddRestaurant(restaurant);
             return Ok(addRestaurant);
         }
 
         [HttpGet("{name}")]
         public IActionResult GetRestaurant([FromRoute] string name)
         {
-            var getRestaurant = repository.GetRestaurant(name);
-            if (getRestaurant == null)
+            var restaurant = restaurantRepository.GetRestaurant(name);
+            if (restaurant == null)
             {
-                throw new Exception("Restaurant not found");
+                return NoContent();
             }
-            return Ok(getRestaurant);
+            return Ok(restaurant);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateRestaurant([FromBody] UpdateRestaurantRequest updateRestaurant, [FromRoute] long id)
+        public IActionResult UpdateRestaurant([FromRoute] long id, [FromBody] UpdateRestaurantRequest updateRestaurant)
         {
-            updateValidator.ValidateAndThrow(updateRestaurant);
-            var restaurant = repository.UpdateRestaurant(id, updateRestaurant);
+            addUpdateRequestValidator.ValidateAndThrow(updateRestaurant);
+            var restaurant = restaurantRepository.UpdateRestaurant(id, updateRestaurant);
             return Ok(restaurant);
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteRestaurant([FromRoute] long id)
         {
-            var restaurant = repository.DeleteRestaurant(id);
+            var restaurant = restaurantRepository.DeleteRestaurant(id);
             return Ok("restaurant deleted");
         }
     }

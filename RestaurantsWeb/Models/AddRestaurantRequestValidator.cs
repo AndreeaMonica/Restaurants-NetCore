@@ -13,10 +13,9 @@ namespace RestaurantsWeb.Models
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Name).NotEmpty();
-            RuleFor(x => x.Adress).NotEmpty();
+            RuleFor(x => x.Adress).NotEmpty().Length(5, 100);
             RuleFor(x => x.City).NotEmpty();
-            RuleFor(x => x.Country).NotEmpty();
+            RuleFor(x => x.Country).NotEmpty().Length(5, 100); ;
         }
-
     }
 }

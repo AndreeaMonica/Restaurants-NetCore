@@ -21,12 +21,6 @@ namespace RestaurantsWeb.Repositories
 
         public long AddRestaurant(AddRestaurantRequest addRestaurant)
         {
-            //var restaurant = new Restaurants();
-            //restaurant.Name = addRestaurant.Name;
-            //restaurant.Adress = addRestaurant.Adress;
-            //restaurant.City = addRestaurant.City;
-            //restaurant.Country = addRestaurant.Country;
-
             var restaurant = mapper.Map<Restaurants>(addRestaurant);
             context.Add(restaurant);
             context.SaveChanges();
@@ -36,6 +30,10 @@ namespace RestaurantsWeb.Repositories
         public bool DeleteRestaurant(long id)
         {
             var restaurant = context.Restaurants.FirstOrDefault(x => x.Id == id);
+            if (restaurant == null)
+            {
+                throw new Exception("No restaurant found");
+            }
             context.Remove(restaurant);
             context.SaveChanges();
             return true;
@@ -53,8 +51,8 @@ namespace RestaurantsWeb.Repositories
         public GetRestaurantResponse GetRestaurant(string name)
         {
             var restaurant = context.Restaurants.FirstOrDefault(x => x.Name == name);
-            var getRestaurant = mapper.Map<GetRestaurantResponse>(restaurant);
-            return getRestaurant;
+            var restaurantResponse = mapper.Map<GetRestaurantResponse>(restaurant);
+            return restaurantResponse;
         }
 
         public long UpdateRestaurant(long id, UpdateRestaurantRequest updateRestaurant)

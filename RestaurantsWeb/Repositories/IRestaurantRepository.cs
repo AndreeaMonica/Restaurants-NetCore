@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RestaurantsWeb.Entities
+namespace RestaurantsWeb.Repositories
 {
     public interface IRestaurantRepository
     {
@@ -13,6 +13,5 @@ namespace RestaurantsWeb.Entities
         long UpdateRestaurant(long id,UpdateRestaurantRequest updateRestaurant);
         bool DeleteRestaurant(long id);
         IEnumerable<GetAllRestaurantsResponse> GetAllRestaurants();
-
     }
 }
