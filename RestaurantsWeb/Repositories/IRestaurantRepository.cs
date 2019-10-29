@@ -8,6 +8,10 @@ namespace RestaurantsWeb.Repositories
 {
     public interface IRestaurantRepository
     {
-        RestaurantDTO GetRestaurant(string name);
+        long AddRestaurant(AddRestaurantRequest addRestaurant);
+        GetRestaurantResponse GetRestaurant(string name);
+        long UpdateRestaurant(long id,UpdateRestaurantRequest updateRestaurant);
+        bool DeleteRestaurant(long id);
+        IEnumerable<GetAllRestaurantsResponse> GetAllRestaurants();
     }
 }

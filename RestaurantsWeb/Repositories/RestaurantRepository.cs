@@ -1,4 +1,6 @@
-﻿using RestaurantsWeb.Models;
+﻿using AutoMapper;
+using RestaurantsWeb.Entities;
+using RestaurantsWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,22 +10,61 @@ namespace RestaurantsWeb.Repositories
 {
     public class RestaurantRepository : IRestaurantRepository
     {
+        private readonly RestaurantContext context;
+        private readonly IMapper mapper;
 
-        private readonly List<RestaurantDTO> context;
-
-        public RestaurantRepository()
+        public RestaurantRepository(RestaurantContext context, IMapper mapper)
         {
-            context = new List<RestaurantDTO>(); // Response
-            context.Add(new RestaurantDTO { Name = "Mara Mura", Location = "Aviatorilor" });
-            context.Add(new RestaurantDTO { Name = "Ethel", Location = "Arcul de Triumf" });
-            context.Add(new RestaurantDTO { Name = "French Revolution", Location = "Victoriei" });
-            context.Add(new RestaurantDTO { Name = "Maison des Crepes", Location = "Aviatorilor" });
+            this.context = context;
+            this.mapper = mapper;
         }
 
-        public RestaurantDTO GetRestaurant(string name)
+        public long AddRestaurant(AddRestaurantRequest addRestaurant)
         {
-            var restaurant = context.FirstOrDefault(x => x.Name == name);
-            return restaurant;
+            var restaurant = mapper.Map<Restaurants>(addRestaurant);
+            context.Add(restaurant);
+            context.SaveChanges();
+            return restaurant.Id;
         }
+
+        public bool DeleteRestaurant(long id)
+        {
+            var restaurant = context.Restaurants.FirstOrDefault(x => x.Id == id);
+            if (restaurant == null)
+            {
+                throw new Exception("No restaurant found");
+            }
+            context.Remove(restaurant);
+            context.SaveChanges();
+            return true;
+        }
+
+        public IEnumerable<GetAllRestaurantsResponse> GetAllRestaurants()
+        {
+            var restaurants = context
+                .Restaurants
+                .ToList();
+            var getRestaurants = mapper.Map<IEnumerable<GetAllRestaurantsResponse>>(restaurants);
+            return getRestaurants;
+        }
+
+        public GetRestaurantResponse GetRestaurant(string name)
+        {
+            var restaurant = context.Restaurants.FirstOrDefault(x => x.Name == name);
+            var restaurantResponse = mapper.Map<GetRestaurantResponse>(restaurant);
+            return restaurantResponse;
+        }
+
+        public long UpdateRestaurant(long id, UpdateRestaurantRequest updateRestaurant)
+        {
+            var restaurant = context.Restaurants.FirstOrDefault(x => x.Id == id);
+            restaurant.Adress = updateRestaurant.Adress;
+            restaurant.City = updateRestaurant.City;
+            context.Update(restaurant);
+            context.SaveChanges();
+            return restaurant.Id;
+        }
+
+
     }
 }
