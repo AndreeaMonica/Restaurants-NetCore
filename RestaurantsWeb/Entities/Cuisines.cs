@@ -3,18 +3,16 @@ using System.Collections.Generic;
 
 namespace RestaurantsWeb.Entities
 {
-    public partial class Restaurants
+    public partial class Cuisines
     {
-        public Restaurants()
+        public Cuisines()
         {
             RestaurantsXCuisines = new HashSet<RestaurantsXCuisines>();
         }
 
         public long Id { get; set; }
-        public string Name { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
-        public string Adress { get; set; }
+        public string Type { get; set; }
+        public long Price { get; set; }
 
         public virtual ICollection<RestaurantsXCuisines> RestaurantsXCuisines { get; set; }
     }

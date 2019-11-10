@@ -15,7 +15,9 @@ namespace RestaurantsWeb.Entities
         {
         }
 
+        public virtual DbSet<Cuisines> Cuisines { get; set; }
         public virtual DbSet<Restaurants> Restaurants { get; set; }
+        public virtual DbSet<RestaurantsXCuisines> RestaurantsXCuisines { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -24,6 +26,13 @@ namespace RestaurantsWeb.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
+            modelBuilder.Entity<Cuisines>(entity =>
+            {
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
 
             modelBuilder.Entity<Restaurants>(entity =>
             {
@@ -42,6 +51,23 @@ namespace RestaurantsWeb.Entities
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<RestaurantsXCuisines>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .HasMaxLength(10)
+                    .ValueGeneratedNever();
+
+                entity.HasOne(d => d.Cuisine)
+                    .WithMany(p => p.RestaurantsXCuisines)
+                    .HasForeignKey(d => d.CuisineId)
+                    .HasConstraintName("FK_CuisineId");
+
+                entity.HasOne(d => d.Restaurant)
+                    .WithMany(p => p.RestaurantsXCuisines)
+                    .HasForeignKey(d => d.RestaurantId)
+                    .HasConstraintName("FK_RestaurantId");
             });
         }
     }

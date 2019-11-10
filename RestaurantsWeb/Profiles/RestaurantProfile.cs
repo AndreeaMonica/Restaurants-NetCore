@@ -18,6 +18,7 @@ namespace RestaurantsWeb.Profiles
                 .ReverseMap();
             this.CreateMap<Restaurants, GetAllRestaurantsResponse>()
                 .ReverseMap();
+
         }
     }
 }

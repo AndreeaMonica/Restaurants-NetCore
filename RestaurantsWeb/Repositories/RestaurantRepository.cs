@@ -21,8 +21,55 @@ namespace RestaurantsWeb.Repositories
 
         public long AddRestaurant(AddRestaurantRequest addRestaurant)
         {
+            List<RestaurantsXCuisines> relationShipManyToMany = new List<RestaurantsXCuisines>();
+
+            var existingCuisines = context.
+                Cuisines.
+                Where(x => addRestaurant.
+                            Cuisines.
+                            Any(y => y.Type == x.Type))
+                .ToList();
+
+            var newCuisines = addRestaurant.
+                Cuisines.
+                Where(x => existingCuisines.
+                            Any(y => y.Type != x.Type))
+                .Select(x=> new Cuisines()
+                {
+                    Price = x.Price,
+                    Type = x.Type
+                })
+                .ToList();
+
             var restaurant = mapper.Map<Restaurants>(addRestaurant);
             context.Add(restaurant);
+
+            foreach (var existingCuisine in existingCuisines)
+            {
+                var restaurntXCusine = new RestaurantsXCuisines()
+                {
+                    Restaurant = restaurant,
+                    Cuisine = existingCuisine
+                };
+                relationShipManyToMany.Add(restaurntXCusine);
+            }
+
+            foreach (var newCuisine in newCuisines)
+            {
+                
+                var restaurntXCusine = new RestaurantsXCuisines()
+                {
+                    Restaurant = restaurant,
+                    Cuisine = newCuisine
+                };
+
+                context.Add(newCuisine);
+                //context.Add(restaurntXCusine);
+
+                relationShipManyToMany.Add(restaurntXCusine);
+            }
+
+            context.AddRange(relationShipManyToMany);
             context.SaveChanges();
             return restaurant.Id;
         }
